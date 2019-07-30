@@ -18,6 +18,7 @@ const passport = require('passport');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+const hbs = require('express-handlebars');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
@@ -63,7 +64,17 @@ mongoose.connection.on('error', (err) => {
 app.set('host', process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0');
 app.set('port', process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+
+
+app.set('view engine', 'hbs');
+
+app.engine('.hbs', hbs({
+  extname: '.hbs',
+  defaultLayout: 'main',
+  layoutsDir: __dirname + '/views/layouts',
+  partialsDir: __dirname + '/views/partials/'
+}));
+
 app.use(expressStatusMonitor());
 app.use(compression());
 app.use(sass({
